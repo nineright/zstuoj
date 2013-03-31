@@ -1,0 +1,63 @@
+{%include 'oj-header.html'%}
+<title>Registration Page</title>
+<div style="width:450px;margin:auto;" class="border">
+	<div class="navbar">
+		<div class="navbar-inner">
+			<span class="brand">Personal Information</span>
+		</div>
+	</div>
+	<form class="form-horizontal" action="" method="POST">
+		{% csrf_token %}
+		<div class="control-group {%if form.user_id.errors%}error{%endif%}">
+			<label class="control-label" for='uid'>User Id:</label>
+			<div class="controls">
+				<input type="text" class="input-large" placeholder="User Id" 
+				id="uid" name="user_id" value={{form.user_id.value}} >*
+				<span class="help-inline">{{form.user_id.errors}}</span>
+			</div>
+		</div>
+		<div class="control-group {%if form.nick.errors%}error{%endif%}">
+			<label class="control-label" for='nick'>Nick Name:</label>
+			<div class="controls">
+				<input type="text" class="input-large" placeholder="Nick Name" 
+				id="nick" name="nick" value={{form.nick.value}}>*
+				<span class="help-inline">{{form.nick.errors}}</span>
+			</div>
+		</div>
+		<div class="control-group {%if form.password.errors%}error{%endif%} ">
+			<label class="control-label" for="pwd">Password:</label>
+			<div class="controls">
+				<input type="password" class="input-large" id="pwd" name="password">*
+				<span class="help-inline">{{form.password.errors}}</span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="rpwd">Repeat Password:</label>
+			<div class="controls">
+				<input type="password" class="input-large" id="rpwd" name="re_password">*
+			</div>
+		</div>
+		<div class="control-group {%if form.email.errors%}error{%endif%}">
+			<label class="control-label" for='email'>Email:</label>
+			<div class="controls">
+				<input type="text" class="input-large" placeholder="Email" 
+				id="email" name="email" value={{form.email.value}}>*
+				<span class="help-inline">{{form.email.errors}}</span>
+			</div>
+		</div>
+		<div class="control-group {%if form.school.errors%}error{%endif%}">
+			<label class="control-label" for='school' >School:</label>
+			<div class="controls">
+				<input type="text" class="input-large" placeholder="School" 
+				id="school" name="school" value={{form.school.value}}>*
+				<span class="help-inline">{{form.school.errors}}</span>
+			</div>
+		</div>
+		<div id=center>
+			<input type="submit" class="btn btn-primary" value='Submit'>
+			<input type="reset" class="btn btn-primary" value='Reset'>
+		</div>
+	</form>
+</div>
+
+

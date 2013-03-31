@@ -1,0 +1,10 @@
+{% include "oj-header.html" %}
+{% for pageline in pagelines %}
+<div class='pagination pagination-centered'>
+	<ul>
+		{% for page in pageline %}
+		<li><a href='#'>{{ page }}</a></li>
+		{% endfor %}
+	</ul>
+</div>
+{% endfor %}

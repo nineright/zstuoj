@@ -1,0 +1,75 @@
+{%include 'oj-header.html'%}
+<title>Problem Set</title>
+
+<script src="/js/sortTable.js"></script>
+
+{% for pageline in pagelines %}
+<div class='pagination pagination-centered'>
+	<ul>
+		{% for page in pageline %}
+		{% ifequal cur_page page %}
+		<li class='active'>
+		{% else %}
+		<li>
+		{% endifequal %}
+		<a href='?page={{ page }}'>{{ page }}</a></li>
+		{% endfor %}
+	</ul>
+</div>
+{% endfor %}
+
+<center>
+	<div class="controls controls-row">
+		<form action=problem class = "span4 form-inline">
+			Problem ID
+			<input type='text' name='pid' class="input-medium" placeholder="Problem ID">
+			<input type='submit' value='GO' class="btn btn-primary">
+		</form>
+		<form class = "span5 form-inline">
+			Search
+			<input type='text' name='search' class="input-large" placeholder="Keywords">
+			<input type='submit' value='Search' class="btn btn-primary">
+		</form>
+	</div>
+
+	<table width='90%'>
+		<thead>
+			<tr align=center class='toprow'>
+				<td width = '5'> </td>
+				<td style="cursor:hand" onclick="sortTable('problemset', 1, 'int');" width=10%><A>Problem ID</A></td>
+				<td width='70%'>Title</td>
+				<!-- <td width='10%'>Source</td> -->
+				<td style="cursor:hand" onclick="sortTable('problemset', 4, 'int');" width='5%'><A>Accept</A></td>
+				<td style="cursor:hand" onclick="sortTable('problemset', 5, 'int');" width='5%'><A>Submit</A></td>
+			</tr>
+		</thead>
+		<tbody>
+			{% for problem_info in problemlist %}
+			<tr class={% cycle 'evenrow' 'oddrow' %}>
+				<td>
+					{%if user_id%}
+					{%ifequal problem_info.has_ac 1%}	
+					<span style='color:green;font-weight:bold'>Y</span>
+					{%endifequal%}
+					{%ifequal problem_info.has_ac 2%}	
+					<span style='color:red;font-weight:bold'>N</span>
+					{%endifequal%}
+					{%endif%}
+				</td>	
+				<td>{{problem_info.problem_id}}</td>
+				<td align='left'><a href='/JudgeOnline/problem/{{problem_info.problem_id}}'>
+						{{problem_info.title}}
+				</a></td>	
+				<!--<td>{{problem_info.source}}</td>-->
+				<td><a href='/JudgeOnline/status/?pid={{problem_info.problem_id}}&result=4'>
+						{{ problem_info.accepted }}	
+				</a></td>
+				<td><a href='/JudgeOnline/status/?pid={{problem_info.problem_id}}'>
+						{{problem_info.submit}}
+				</a></td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</center>
+

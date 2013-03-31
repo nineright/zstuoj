@@ -1,0 +1,36 @@
+{% include 'oj-header.html' %}
+
+<title>LOGIN</title>
+
+<div style="width:450px;margin:auto;" class="border">
+	<div class="navbar">
+		<div class="navbar-inner">
+			<span class="brand">ZSTUOJ</span>
+		</div>
+	</div>
+	<form class="form-horizontal"  action="" method="POST">
+		{%csrf_token%}
+		{%if form.errors or login_error%}
+		<p style="color:red;" id = center>Invalid Username or Password!</p>
+		{%endif%}
+		{{form.referrer}}
+		<div class="control-group">
+			<label class="control-label" for='uname'>Username:</label>
+			<div class="controls">
+				<input type="text" class="input-large" placeholder="Username" id="uname" name="username" value="{{form.username.value}}" >
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="pwd">Password:</label>
+			<div class="controls">
+				<input type="password" class="input-large" id="pwd" placeholder="Password" name="password" >
+			</div>
+		</div>
+		<div id=center>
+			<input type="submit" class="btn btn-primary" value='Login'>
+			<a class ="btn btn-info" href="registerpage">Register</a>
+		</div>
+	</form>
+</div>
+<br><br>
+

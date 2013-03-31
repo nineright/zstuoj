@@ -1,0 +1,67 @@
+{%include 'oj-header.html'%}
+<!-- saved from url=(0043)http://10.11.246.150/JudgeOnline/status.php -->
+<meta http-equiv="refresh" content="60">
+<title>Submission Status</title>
+
+<div style="text-align:center">
+
+	<form class="form-inline" action="" method="get">
+		Problem:  <input type="text" class="input-small" name="pid" value="{{cd.pid}}">
+		User: <input type="text" class="input-medium" name="uid" value="{{cd.uid}}">
+		Language:<select name="lang" class="span1">
+			{%for lang in lang_list%}
+			<option value={{lang.value}} {%ifequal cd.lang lang.value%}
+			selected=""{%endifequal%}>{{lang.name}}</option>
+			{%endfor%}
+		</select>
+		Result:<select class="span2" name="result">
+			{%for result in result_list%}
+			<option value={{result.value}} {%ifequal cd.result result.value%}
+			selected=""{%endifequal%}>{{result.name}}</option>
+			{%endfor%}
+		</select>
+		<input class="btn btn-primary" type="submit" value="Filter">
+	</form>
+</div>
+
+<table align="center" width="90%">
+	<tbody>
+		<tr class="toprow">
+			<td>RunID</td>
+			<td>User</td>
+			<td>Problem</td>
+			<td>Result</td>
+			<td>Memory</td>
+			<td>Time</td>
+			<td>Language</td>
+			<td>Code Length</td>
+			<td>Submit Time</td>
+		</tr>
+		{%if error%}
+		{%else%}
+		{%for status in status_list%}
+		<tr align="center" class={% cycle 'evenrow' 'oddrow' %}>
+			<td>{{status.solution_id}}</td>
+			<td><a href='/JudgeOnline/user/{{status.user_id}}/'>{{status.user_id}}</a></td>
+			<td><a href="/JudgeOnline/problem/{{status.pid}}/">{{status.problem_id}}</a></td>
+			<td class={%ifequal status.result "Accept"%}"green"{%else%}"red"{%endifequal%}>{{status.result}}</td>
+			<td>{{status.memory}}</td>
+			<td>{{status.time}}</td>
+			<td>{{status.language}}</td>
+			<td>{{status.code_length|filesizeformat}}</td>
+			<td>{{status.in_date}}</td>
+		</tr>
+		{%endfor%}
+		{%endif%}
+	</tbody>
+</table>
+
+<br>
+<div id="center" class="btn-group">
+	<a class="btn" href="/JudgeOnline/status/">Top</a>
+	<a class="btn" href="?top={{pre_top}}&pid={{cd.pid}}&uid={{cd.uid}}
+		&result={{cd.result}}&lang={{cd.lang}}">Pre</a>
+	<a class="btn" href="?top={{next_top}}&pid={{cd.pid}}&uid={{cd.uid}}
+		&result={{cd.result}}&lang={{cd.lang}}">Next</a>
+</div>
+

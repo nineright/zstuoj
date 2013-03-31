@@ -1,0 +1,165 @@
+
+.toprow{
+	background-color:black;
+	color:#FFFFFF;
+    font-weight:bold;
+   white-space: nowrap;
+}
+.toprow a{ font-family: Arial; font-weight: bold; font-size: 18px; color: #FFFFFF;}
+.toprow a:hover{ font-family: Arial; font-weight: bold; font-size: 18px;}
+
+.oddrow{white-space: nowrap;}
+.evenrow{background-color:#DBE4D7/*#DCE7D7*/;white-space: nowrap;}
+body{
+	/*background-image: url(../image/background.jpg);*/
+}
+.hd{
+color:#FFFFFF;
+font-weight:bold;
+}
+#center{
+	text-align:center
+}
+
+.green {
+color:green; 
+}
+.red{
+color:red;
+}
+.blue{
+background-color:#347BE6;
+}
+.gray{
+color:gray
+}
+.orange{
+color:orange
+}
+
+div.content {
+	height: auto;
+	background-image: url(../image/background.jpg);
+	margin: 0;
+	padding: 0 20px;
+	font-family:Courier New, Arial, Times New Roman;
+	font-size: 15px;
+	text-align: left;
+	padding-bottom:5px;
+	padding-top:5px;
+	border-radius:8px;
+}
+#head{
+	position:static; 
+	width: 980px;
+	height:53px;
+	padding:50px;
+	z-index:1; 
+	visibility:visible;
+	text-align:center;
+	margin-left:auto;
+	margin-right:auto;
+}
+#menu{
+	/*position:static; */
+	width:100%;
+	/*height:32px;*/
+	z-index:2; 
+	visibility:visible;
+	text-align:center;
+	font-weight:bold;
+	padding: 10px;
+	background: black;
+	color:white;
+	top: 0;
+}
+.menu_item{
+	font-size:18px;
+	display:inline;
+	padding:3px;
+	margin:10px
+}
+.menu_item a{
+	color:white;
+}
+#broadcast{
+	position:static; 
+//	left:0px; 
+//	top:105px;
+	margin-top:50px;
+	width:100%; 
+	height:50px;
+	z-index:4; 
+	visibility:visible;
+	text-align:center;
+	color:#775825;
+}
+
+#main{
+	position:static;
+/*	left:0px;
+	top:209px;*/
+	overflow:hidden;
+	width: 980px;
+	height:auto;
+	z-index:6; 
+	visibility:visible;
+	margin-left:auto;
+	margin-right:auto;
+	background:#EEEEEE;
+	padding:10px;
+	border-radius:15px;
+}
+
+#foot{
+	position:static; 
+/*	left:0px; 
+	top:520px;
+	width: 980px;
+	padding-left: 100px; 
+	height:133px; */
+	z-index:7; 
+	visibility:visible;
+	text-align:center;
+	border-top:solid 1px #abc
+}
+
+#data {
+	margin-right: 30px;
+	float: left;
+	text-align: left;
+	width: 400px;
+}
+
+#blk_bg{
+	padding:20px;
+	background-color:#EEEEEE;
+	border-radius:6px;
+}
+div.header {
+	font-weight: bold;
+	font-size: 12pt;
+}
+
+table {
+	background-color: transparent;
+	border-collapse: collapse;
+	border-spacing: 0;
+	border: 1px solid #DDD;
+}
+td {
+	border-left:1px solid #DDD;
+	padding:3px;
+}
+
+tr{
+	height:30px;
+}
+input{
+	height:28px;
+}
+
+.border{
+	border:1px solid #DDD;
+	border-radius:8px
+}
