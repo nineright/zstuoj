@@ -1,0 +1,23 @@
+2013-3-20
+	利用admin模块对jol数据库进行管理，其中添加problem中存在id要自动生成的问题，可以通过modelAdmin类隐藏problem_id这个field，然后在model的定义里允许problem_id为空，数据库中problem_id是primary key并且是auto_increment
+	model的定义中，可以在database的基础上进行更为丰富的数据规范
+	templates没有弄好，修改了vim配置（之前的自动缩进8个空格），网上搜了一个.vimrc配置，搞定。
+	html的close tag如果缺了，gg=G的时候缩进会乱掉，缩进为两个Tab，困惑了半天
+
+
+2013-3-23
+	render函数中传递dict参数，params如果render调用的时候update，update不会生效
+	例如render(request, 'login.html', params.update('error':error))，此时error不会传到template里去，原因有待进一步了解
+	磕磕绊绊吧登录的session搞定了，django的form模块很不错，但是不知到怎么定制CSS，还有知道了CSRF，POST的数据都要加个CSRF
+
+2013-3-24
+	表单的数据库部分的验证要交给form模块还是交给view模块, 如果交给form，那么form里面也要设计到更新login_log等数据库的操作，如果不交给form,不好想form的errors加消息
+	form表单的clean_field1函数如果在函数体内访问其他field2的数据，but the the field2 is defined after the field1 after Form class, then the clean_field1 function will get None value for field2 cause the field2 is not processed(I guess)
+
+2013-3-26
+	统计数据表的记录数时不要用len函数，这样会把整个queryset扫描一遍，用queryset自带的count函数
+	if the field of form is not required, then if the user submit a emtpy field, the this field is set to None, and doesn't use the initial value
+	when you use indexing to get an object from a queryset, the object you are getting is a copy of the original, so you are modifiying a copy of the object "inside" the queryset.
+	QuerySets in Django are actually generators, not lists. As such, there is no shortcut to get the index of an element, and I think a plain iteration is the best way to do it.
+	The aggregate in a QuerySet is performed through the whole table, no matter the current QuerySet is.
+	The old zstuoj set "SystemError"=98 of Judge Result and "Waiting"=10000 which is different from hustoj

@@ -8,6 +8,7 @@
 # into your database.
 
 from django.db import models
+from django.db.models import Q
 from datetime import datetime
 
 class Users(models.Model):
@@ -34,7 +35,7 @@ class ProblemManager(models.Manager):
 		start_pid = (page-1)*100+1000
 		end_pid = start_pid+100
 		if keyword:
-			plist = self.filter(title__icontains=keyword)
+			plist = self.filter(Q(title__icontains=keyword) | Q(source__icontains=keyword))
 		else:
 			plist = self.filter(problem_id__gte=start_pid).filter(problem_id__lt=end_pid)
 		plist = plist.values('problem_id', 'title', 'accepted', 'submit')

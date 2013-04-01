@@ -42,8 +42,8 @@
 		{%for status in status_list%}
 		<tr align="center" class={% cycle 'evenrow' 'oddrow' %}>
 			<td>{{status.solution_id}}</td>
-			<td><a href='/JudgeOnline/user/{{status.user_id}}/'>{{status.user_id}}</a></td>
-			<td><a href="/JudgeOnline/problem/{{status.pid}}/">{{status.problem_id}}</a></td>
+			<td><a href='/JudgeOnline/userinfo/{{status.user_id}}/'>{{status.user_id}}</a></td>
+			<td><a href="/JudgeOnline/problem/{{status.problem_id}}/">{{status.problem_id}}</a></td>
 			<td class={%ifequal status.result "Accept"%}"green"{%else%}"red"{%endifequal%}>{{status.result}}</td>
 			<td>{{status.memory}}</td>
 			<td>{{status.time}}</td>

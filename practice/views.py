@@ -1,9 +1,10 @@
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import HttpRequest
+from django.http import Http404
 from django.shortcuts import render
 from django.db.models import Max, Min
-from zstuoj.practice.models import Problem, Users, Solution, Loginlog
+from zstuoj.practice.models import Problem, Users, Solution, Loginlog, Contest, ContestProblem
 from zstuoj.practice.forms import *
 from zstuoj.practice.utils import *
 from datetime import datetime
@@ -23,14 +24,14 @@ def _insert_user(cd, remote_addr):
 
 def _problem_available(pid):
 	p = Problem.objects.filter(problem_id=pid).filter(defunct='N').\
-			values("problem_id")
-	if not p.exists() or p['defunct'] == 'Y':
+			values("problem_id", "defunct")
+	if not p.exists() or p[0]['defunct'] == 'Y':
 		return False
 	pid = p[0]['problem_id']
 	cid_list = Contest.objects.active_contest()
 	for cid in cid_list:
-		if ContestProblem.objects.filter(contest_id=cid).filter(defunct='N')
-				.filter(problem_id=pid).exists():
+		if ContestProblem.objects.filter(contest_id=cid).filter(defunct='N').\
+				filter(problem_id=pid).exists():
 			return False
 	return True
 
@@ -219,10 +220,10 @@ def status(request):
 	# raise
 	return render(request, "status.html", params)
 
-def problem(request):
+def problem(request, pid):
 	try:
-		pid = int(request.GET['pid'])
-	except ValueError, KeyError:
+		pid = int(pid)
+	except ValueError:
 		raise Http404()
 	if not _problem_available(pid):
 		raise Http404()
@@ -239,19 +240,25 @@ def ranklist(request):
 			start = int(request.GET['start'])
 		except ValueError:
 			pass
+	if start < 0:
+		start = 0
 	user_list = Users.objects.order_by('-solved', 'submit').\
 			filter(defunct="N")[start:start+50]
 	user_list = user_list.values("user_id", "nick", "solved", "submit")
 	params = oj_header(request)
-	params.update({"user_list":user_list})
+	params.update({"user_list":user_list, "start":start})
 	return render(request, "ranklist.html", params)
 
 
 
-def submit(request):
+def submit(request, pid):
 	uid = get_user_id()
 	if not uid:
 		return HttpResponseRedirect("/JudgeOnline/login/")
+	try:
+		pid = int(pid)
+	except ValueError:
+		raise Http404()
 
 	params = oj_header(request)
 	params["pid"] = pid
@@ -273,18 +280,25 @@ def submit(request):
 		else:
 			return render(request, "submit.html", params)
 
-	return render(request, "status.html", params)
+	return render(request, "submit.html", params)
 
-def userinfo(request):
-	uid = request.GET.get('user')
-	if not uid:
-		raise Http404()
-	user = Users.objects.filter(user_id=uid).filter(defunct='N')
+def userinfo(request, uid):
+	user = Users.objects.filter(user_id=uid).filter(defunct='N').\
+			values("user_id", "nick", "solved", "submit", "email", "school")
 	if not user.exists():
 		raise Http404()
+	user = user.get()
 
-	solved_list = Solution.objects.filter(user_id=uid)
-	pass
+	attempt_list = Solution.objects.filter(user_id=uid)
+	solved_list = attempt_list.filter(result=4).values("problem_id").\
+			order_by("problem_id").distinct()
+	solved_list = [p["problem_id"] for p in solved_list]
+	user['rank'] = Users.objects.filter(solved__gt=user['solved']).count()+1
+	params = oj_header(request)
+	params.update({"user":user, "solved_list":solved_list})
+	# raise
+	return render(request, "userinfo.html", params)
+
 
 def homepage(request):
 	params = oj_header(request)

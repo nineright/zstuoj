@@ -21,4 +21,10 @@ def pw_check(password, saved):
 	hash = b64encode(sha1(md5(password).hexdigest()+salt).hexdigest()+salt)
 	return hash == saved
 
+def nl2br(html_str, is_html=True):
+	if is_html:
+		return html_str.replace('\n', '<br/>\n')
+	else:
+		return html_str.replace('\n', '<br>\n')
+
 

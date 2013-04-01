@@ -1,1 +1,35 @@
+{%include 'oj-header.html'%}
+<title>User--{{user.user_id}}</title>
+<table class="table">
+	<caption>
+		<h4>{{user.user_id}}--{{user.nick}}&nbsp;&nbsp;
+			<a href=/JudgeOnline/mail/?to_user={{user.user_id}}/>Mail</a>
+		</h4><br/><br/>
+	</caption>
 
+	<tr>
+		<td width=10%>Rank</td>
+		<td width=20% align=center>{{user.rank}}</td>
+		<td width=70% align=center>Solved Problems List</td>
+	</tr>
+	<tr>
+		<td>Solved</td>
+		<td align=center><a href='/JudgeOnline/status/?user_id={{user.user_id}}&result=4/'>{{user.solved}}</a></td>
+		<td rowspan=4>
+			{%for p in solved_list%}
+			<a href="/JudgeOnline/problem/{{p}}/">{{p}}</a>
+			&nbsp;
+			{%if forloop.counter|divisibleby:"10"%}
+			<br/>
+			{%endif%}
+			{%endfor%}
+		</td>
+	</tr>
+	<tr><td>Submit:</td><td><a href='/JudgeOnline/status/?user_id={{user.user_id}}/'>{{user.submit}}</a></td></tr>
+	<tr><td>School:</td><td align=center>{{user.school}}</td></tr>
+	<tr><td>Email:</td><td align=center>{{user.email}}</td></tr>
+</table>
+
+{%if is_admin%}
+show loginlog
+{%endif%}

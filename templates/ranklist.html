@@ -1,1 +1,46 @@
+{%include 'oj-header.html'%}
+<title>Rank List</title>
+
+<div class="controls controls-row" id=center>
+	<form action=userinfo class = "span4 form-inline">
+		User
+		<input type='text' name='user' class="input-medium" placeholder="User ID">
+		<input type='submit' value='Search' class="btn btn-primary"></form>
+</form>
+</div>
+
+<center>
+	<table width=90%>
+		<tr class='toprow'>
+			<td width=5% align=center><b>Rank</b></td>
+			<td width=10% align=center><b>User</b></td>
+			<td width=55% align=center><b>Nick Name</b></td>
+			<td width=10% align=center><b>Accept</b></td>
+			<td width=10% align=center><b>Submit</b></td>
+			<td width=10% align=center><b>Ratio</b></td>
+		</tr>
+		{%for user in user_list%}
+		<tr class={%cycle 'oldrow' 'evenrow'%}>
+			<td align=center>{{forloop.counter|add:start}}</td>
+			<td align=center><a href='/JudgeOnline/userinfo/{{user.user_id}}/'>{{user.user_id}}</a></td>
+			<td align=center>{{user.nick}}</td>
+			<td align=center><a href='/JudgeOnline/status/?uid={{user.user_id}}&result=4'>{{user.solved}}</a></td>
+			<td align=center><a href='/JudgeOnline/status/?uid={{user.user_id}}'>{{user.submit}}</a></td>
+			<td align=center>
+				{%if user.submit%}
+				{%widthratio user.solved user.submit 100%}%
+				{%else%}
+				0%
+				{%endif%}
+			</td>
+		</tr>
+		{%endfor%}
+	</table>
+</center>
+<br>
+<div id=center class='btn-group'>
+	<a class='btn' href=/JudgeOnline/ranklist/>Top</a>
+	<a class='btn' href=/JudgeOnline/ranklist/?start={{start|add:"-50"}}/>Pre</a>
+	<a class='btn' href=/JudgeOnline/ranklist/?start={{start|add:"50"}}/>Next</a>
+</div>
 
