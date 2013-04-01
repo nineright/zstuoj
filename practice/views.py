@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.http import Http404
 from django.shortcuts import render
 from django.db.models import Max, Min
-from zstuoj.practice.models import Problem, Users, Solution, Loginlog, Contest, ContestProblem
+from zstuoj.practice.models import Problem, Users, Solution, Loginlog, Contest, ContestProblem, SourceCode
 from zstuoj.practice.forms import *
 from zstuoj.practice.utils import *
 from datetime import datetime
@@ -39,16 +39,16 @@ def _problem_available(pid):
 def hello(request):
 	return HttpResponse("Hello World")
 
-def get_active_url(req_url):
+def _get_active_url(req_url):
 	active_url = req_url[req_url.find('JudgeOnline')+len('JudgeOnline'):]
 	active_url = active_url.strip('/')
 	active_url = active_url[:active_url.find('/')]
 
-def is_admin(request):
+def _is_admin(request):
 	return ("administrator" in request.session) \
 		or ('contest_creator' in request.session)
 
-def get_user_id(request):
+def _get_user_id(request):
 	if "user_id" in request.session:
 		return request.session['user_id']
 	return ""
@@ -62,9 +62,9 @@ def oj_header(request):
 			{"name":"Contest", "url":"/JudgeOnline/contest"},
 			{"name":"Exam", "url":"/JudgeOnline/exam"},
 			{"name":"FAQ", "url":"/JudgeOnline/faq"}]
-	active_url = get_active_url(request.path)
-	admin = is_admin(request)
-	user_id = get_user_id(request)
+	active_url = _get_active_url(request.path)
+	is_admin = _is_admin(request)
+	user_id = _get_user_id(request)
 	mail = 0
 	return {'active_url': active_url,'user_id': user_id,
 			'is_admin': is_admin, 'mail': mail,	'nav_urls': nav_urls}
@@ -80,7 +80,7 @@ def problemset(request, page='1'):
 		page = int(page)
 	except ValueError:
 		raise Http404()
-	user_id = get_user_id(request)
+	user_id = _get_user_id(request)
 
 	problemlist = Problem.objects.problem_list(page, keyword, user_id)
 	max_pid = Problem.objects.aggregate(Max('problem_id')).values()[0]
@@ -148,18 +148,8 @@ def register(request):
 def status(request):
 	params = oj_header(request)
 
-	lang = ["C", "C++", "Pascal", "Java", "Ruby",
-			"Bash", "Python", "PHP", "Perl", "C#"]
-	lang_list = [{"value":-1, "name":"All"}]
-	lang_list.extend([{"value":idx, "name":name} for (idx, name) in enumerate(lang)])
-
-	result = ["Pending", "Pending Rejudging", "Compiling", "Running",
-			"Accept", "Presentation Error", "Wrong Answer",
-			"Time Limit Exceed", "Memory Limit Exceed",
-			"Output Limit Exceed", "Runtime Error", "Compile Error"]
-	result_list = [{"value":-1, "name":"All"}]
-	result_list.extend([{"value":idx, "name":name} for (idx, name) in
-			enumerate(result)])
+	lang_list = get_langlist()
+	result_list = get_resultlist()
 	params.update({"lang_list":lang_list, "result_list":result_list})
 
 	next_top = 0
@@ -203,8 +193,8 @@ def status(request):
 	status_list = [r for r in status_list]
 	if status_list:
 		for i in xrange(len(status_list)):
-			status_list[i]["result"] = result[status_list[i]["result"]]
-			status_list[i]["language"] = lang[status_list[i]["language"]]
+			status_list[i]["result"] = result_list[status_list[i]["result"]+1]['name']
+			status_list[i]["language"] = lang_list[status_list[i]["language"]+1]['name']
 
 		next_top = status_list[-1]['solution_id']-1
 		if pre_top == 0:
@@ -217,6 +207,7 @@ def status(request):
 			# raise
 	params.update({"pre_top":pre_top, "next_top":next_top,
 		"top":top, "cd":cd,	"status_list":status_list, "error":False})
+
 	# raise
 	return render(request, "status.html", params)
 
@@ -252,16 +243,18 @@ def ranklist(request):
 
 
 def submit(request, pid):
-	uid = get_user_id()
+	uid = _get_user_id(request)
 	if not uid:
 		return HttpResponseRedirect("/JudgeOnline/login/")
+
+	params = oj_header(request)
 	try:
 		pid = int(pid)
 	except ValueError:
 		raise Http404()
-
-	params = oj_header(request)
 	params["pid"] = pid
+	params["lang_list"] = get_langlist(False)
+	params["lastlang"] = 1
 	if request.method == 'POST':
 		form = SubmitForm(request.POST)
 		params.update({"form":form})
@@ -269,18 +262,21 @@ def submit(request, pid):
 			cd = form.cleaned_data
 			if not _problem_available(cd['pid']):
 				raise Http404()
-			r = Solution(problem_id=pid, user_id=uid, time=0, memory=0,
-					in_date=dateime.now(), className="test", reuslt=0,
-					language=cd['lang'], ip=request.META.get('REMOTE_ADDR'),
-					valid=1, num=-1, code_length=len(cd['source']))
+			next_sid = Solution.objects.aggregate(Max('solution_id')).values()[0]+1
+			r = Solution(solution_id=next_sid, problem_id=pid, user_id=uid,
+					time=0, memory=0, in_date=datetime.now(), classname="test",
+					result=0, language=cd['lang'],
+					ip=request.META.get('REMOTE_ADDR'),	valid=1, num=-1,
+					code_length=len(cd['source']))
 			r.save()
-			r = SourceCode(source=cd['source'])
+			r = SourceCode(solution_id=next_sid, source=cd['source'])
 			r.save()
 			return HttpResponseRedirect("/JudgeOnline/status/")
 		else:
 			return render(request, "submit.html", params)
 
 	return render(request, "submit.html", params)
+
 
 def userinfo(request, uid):
 	user = Users.objects.filter(user_id=uid).filter(defunct='N').\
@@ -298,6 +294,36 @@ def userinfo(request, uid):
 	params.update({"user":user, "solved_list":solved_list})
 	# raise
 	return render(request, "userinfo.html", params)
+
+def showsource(request, sid):
+	uid = _get_user_id(request)
+	if not uid:
+		return HttpResponseRedirect("/JudgeOnline/login/")
+	try:
+		sid = int(sid)
+	except ValueError:
+		raise Http404()
+
+	params = oj_header(request)
+	r = Solution.objects.filter(solution_id=sid).values("solution_id",
+			"time",	"problem_id", "user_id", "result", "memory",
+			"language", "code_length")
+	if not r:
+		raise Http404()
+	r = r[0]
+	r['language'] = get_langlist()[r['language']+1]['name']
+	r['result'] = get_resultlist()[r['result']+1]['name']
+	if r['user_id'] == uid or _is_admin():
+		src = SourceCode.objects.filter(solution_id=sid).values("source")
+		if not src.exists():
+			raise Http404()
+		source = src[0]['source']
+		params['source'] = source
+		params['solution'] = r
+		return render(request, "showsource.html", params)
+
+	else:
+		raise Http404()
 
 
 def homepage(request):

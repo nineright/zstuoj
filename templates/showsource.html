@@ -1,1 +1,18 @@
+{%include 'oj-header.html'%} 
+<title>Source Code</title>
 
+<pre>
+{{source}}
+
+/**************************************************************
+	Problem: {{solution.problem_id}}
+	User: {{solution.user_id}}
+	Language: {{solution.language}}
+	Result: {{solution.result}}
+	Length: {{solution.code_length|filesizeformat}}
+{%ifequal solution.result "Accept"%}
+	Time: {{solution.time}} ms
+	Memory: {{solution.memory}}
+{%endifequal%}
+****************************************************************/
+</pre>

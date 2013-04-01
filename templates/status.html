@@ -47,7 +47,13 @@
 			<td class={%ifequal status.result "Accept"%}"green"{%else%}"red"{%endifequal%}>{{status.result}}</td>
 			<td>{{status.memory}}</td>
 			<td>{{status.time}}</td>
-			<td>{{status.language}}</td>
+			<td>
+				{%ifequal status.user_id user_id%}
+				<a href="/JudgeOnline/showsource/{{status.solution_id}}/">{{status.language}}</a>
+				{%else%}
+				{{status.language}}
+				{%endifequal%}
+			</td>
 			<td>{{status.code_length|filesizeformat}}</td>
 			<td>{{status.in_date}}</td>
 		</tr>

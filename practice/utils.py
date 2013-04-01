@@ -21,10 +21,26 @@ def pw_check(password, saved):
 	hash = b64encode(sha1(md5(password).hexdigest()+salt).hexdigest()+salt)
 	return hash == saved
 
-def nl2br(html_str, is_html=True):
-	if is_html:
-		return html_str.replace('\n', '<br/>\n')
-	else:
-		return html_str.replace('\n', '<br>\n')
+def get_langlist(all=True):
+	lang = ["C", "C++", "Pascal", "Java", "Ruby",
+			"Bash", "Python", "PHP", "Perl", "C#"]
+	lang_list = []
+	if all:
+		lang_list = [{"value":-1, "name":"All"}]
+	lang_list.extend([{"value":idx, "name":name} for (idx, name)
+		in enumerate(lang)])
+	return lang_list
+
+
+def get_resultlist():
+	result = ["Pending", "Pending Rejudging", "Compiling", "Running",
+			"Accept", "Presentation Error", "Wrong Answer",
+			"Time Limit Exceed", "Memory Limit Exceed",
+			"Output Limit Exceed", "Runtime Error", "Compile Error"]
+	result_list = [{"value":-1, "name":"All"}]
+	result_list.extend([{"value":idx, "name":name} for (idx, name)
+		in enumerate(result)])
+	return result_list
+
 
 

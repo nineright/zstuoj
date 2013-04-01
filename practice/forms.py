@@ -64,3 +64,9 @@ class StatusSearchForm(forms.Form):
 		return cd
 
 
+class SubmitForm(forms.Form):
+	pid = forms.IntegerField()
+	lang = forms.IntegerField()
+	source = forms.CharField(widget=forms.Textarea, max_length=65536, min_length=10)
+
+

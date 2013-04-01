@@ -1,1 +1,28 @@
+{%include 'oj-header.html'%}
+<title>Submit Code</title>
+<center>
+	<script src="include/checksource.js">
+	</script>
+	<form action="" method="post" >
+		{%csrf_token%}
+		Problem&nbsp;<b>{{pid}}</b><br>
+		<input type='hidden' value={{pid}} name="pid">
+		Language:&nbsp;
+		<select id="lang" name="lang" class='input-small'>
+			{%for lang in lang_list %}
+			{%ifequal lastlang lang.value%}
+			<option value={{lang.value}} selected="">{{lang.name}}</option>
+			{%else%}
+			<option value={{lang.value}} >{{lang.name}}</option>
+			{%endifequal%}
+			{%endfor%}
+		</select>
+		<br>
+		<p style="color:red">{{form.errors.as_text}}</p>
+		<textarea style="width: 600px; font-family: Monaco, Lucida Console, Courier New, Free Monospaced;" 
+			name="source" rows="20">{{form.source.value}}</textarea><br>
+		<input type=submit  class='btn btn-primary' value="Submit">
+		<input type=reset class='btn btn-primary' value="Reset">
+	</form>
+</center>
 
