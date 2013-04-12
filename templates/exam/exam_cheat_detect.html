@@ -1,0 +1,12 @@
+﻿{%include "exam-header.html"%}
+<h3 id=center>考生登录IP统计</h3>
+<table width='50%' style='margin:auto'>
+	<tr class='toprow'><td>考生ID</td><td>考试期间登录IP计数</td></tr>
+	{%for user in user_list%}
+	<tr class = {%cycle "evenrow" "oddrow"%}>
+		<td><a href='/JudgeOnline/userinfo/{{user.user_id}}'>{{user.user_id}}</a> </td>
+		<td>{{user.cnt}}</td>
+	</tr>
+	{%endfor%}
+</table>
+

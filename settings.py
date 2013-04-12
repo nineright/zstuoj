@@ -111,6 +111,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 	'/home/nineright/codes/djcode/zstuoj/templates',
+	'/home/nineright/codes/djcode/zstuoj/templates/exam',
 )
 
 INSTALLED_APPS = (

@@ -1,0 +1,68 @@
+{%include "exam-header.html"%}
+<!--Personal Paper-->
+{%if uid%}
+<table width=90% align=center>
+<tr><td>
+	<h2>考生--$uid</h2>
+	<h2>判断题</h2>
+
+	{%for tf in tf_list%}
+	<div style='padding:10px'>
+	<br><pre style='font-size:16px'>{{forloop.counter}}. (1 分)<br>{{tf.description}}</pre>
+	考生选择:&nbsp;{{tf.choice}}<br>
+	{%ifequal tf.choice tf.answer%}
+	答案:&nbsp;{{tf.answer}}
+	{%else%}
+	答案:&nbsp;<font color='red'>{{tf.answer}}</font>
+	{%endif%}
+	</div>
+	{%endfor%}
+
+	<h2>选择题</h2>
+	{%for select in select_list%}
+	<div style='padding:10px'>
+	<br><pre style='font-size:16px'>{{forloop.counter}}. (2 分)<br>{{select.description}}</pre>
+	<br><br>
+	A:&nbsp;{{select.opt_a}}<br>
+	B:&nbsp;{{select.opt_b}}<br>
+	C:&nbsp;{{select.opt_c}}<br>
+	D:&nbsp;{{select.opt_d}}<br>
+	考生选择:{{select.choice}}<br>
+	{%ifequal select.choice select.answer%}
+	答案:&nbsp;select.answer
+	{%else%}
+	答案:&nbsp;<font color='red'>{{select.answer}}</font>
+	{%endifequal%}
+	</div>
+	{%endfor%}
+	</td></tr>
+</table>
+
+<!--all students result-->
+{%else%}
+<form class='form-inline' method='GET' id=center action = 'exam_result.php'>
+	<input type=hidden name='eid' value='$eid'>
+	<input type=text name='fuid' value = '$ft_uid' placeholder='用户ID' class='input-large'>&nbsp;&nbsp;and/or&nbsp;&nbsp;
+	<input type=text name='fnick' value = '$ft_nick' placeholder='用户昵称' class='input-large'>
+	&nbsp;<input type=submit name='submit' class='btn btn-primary' value='查询'>
+</form>
+
+<table align=center width = 90%>
+	<tr class='toprow'>
+		<td>考生ID</td><td>考生信息</td><td>成绩</td><td>编程题</td>
+		<td>判断题</td><td>选择题</td><td>浏览试卷</td></tr>
+
+	{%for user in user_list%}
+	<tr class = {%cycle "evenrow" "oddrow"%}>	
+		<td><a href="/JudgeOnline/userinfo/user.user_id/">{{user.user_id}}</a></td>
+		<td>{{user.nick}}</td>
+		<td>{{user.total_score}}</td>
+		<td><a href = '/JudgeOnline/status/?uid=user.user_id&cid=$eid&result=4'>{{user.solved}}</a></td>
+		<td>{{user.tf_score}}</td>
+		<td>{{user.select_score}}</td>";
+		<td><a href='/JudgeOnline/exam_result/?eid={{eid}}&uid={{user.user_id}}'>浏览考卷</a></td>
+	</tr>
+	{%endfor%}
+</table>
+{%endif%}
+

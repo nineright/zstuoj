@@ -1,0 +1,25 @@
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel=stylesheet href='/css/oj.css'type='text/css'>
+
+	<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+	<link href="/bootstrap/css/prettify.css" media="screen" rel="stylesheet">
+</head>
+
+<!-- check attend students, check time check login-->
+<table width=100% class="toprow  navbar-fixed-top">
+	<tr align=center>
+		<td width=20%><a class=hd href='/JudgeOnline/'>首页</a></td>
+		<td width=20%><a class=hd href='/JudgeOnline/exam/{{eid}}'>考试题目</a></td>
+		<td width=20%><a class=hd href='/JudgeOnline/status/cid={{eid}}/'>提交状态</a></td>
+		{%if exam_admin%}
+		<td width=15%><a class=hd href='/JudgeOnline/exam_result/?eid={{eid}}'>成绩统计</a></td>
+		<td width=15%><a class=hd href='/JudgeOnline/cheat_detect/?eid={{eid}}/'>作弊检测</a></td>
+		{%endif%}
+	</tr>
+</table>
+
+<div id="main">
+
+

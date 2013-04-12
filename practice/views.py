@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.http import Http404
 from django.shortcuts import render
 from django.db.models import Max, Min
-from zstuoj.practice.models import Problem, Users, Solution, Loginlog, Contest, ContestProblem, SourceCode
+from zstuoj.practice.models import *
 from zstuoj.practice.forms import *
 from zstuoj.practice.utils import *
 from datetime import datetime
@@ -14,6 +14,12 @@ def _update_loginlog(uid, pwd, remote_addr=""):
 	log = Loginlog(user_id=uid, password=pw_gen(pwd),
 			ip=remote_addr, time=datetime.now())
 	log.save()
+
+def _update_session(uid):
+	request.session["user_id"] = uid
+	pri_list = Privilege.objects.filter(user_id=uid)
+	for pri in pri_list:
+		request.session[pri.rightstr] = 1
 
 def _insert_user(cd, remote_addr):
 	user = Users(user_id=cd['user_id'], email=cd.get('email'), defunct='N',
@@ -103,10 +109,10 @@ def login(request):
 				m = Users.objects.get(user_id=cd['username'])
 				_update_loginlog(cd['username'], cd['password'],
 						request.META.get('REMOTE_ADDR'))
+				_set_privilege(user_id)
 				if m and pw_check(cd['password'], m.password):
-					request.session['user_id'] = cd['username']
+					_update_session(cd['username'])
 					referrer = cd['referrer']
-					request.session['user_id'] = cd['username']
 					return HttpResponseRedirect(referrer)
 			except Users.DoesNotExist:
 				pass
@@ -241,7 +247,6 @@ def ranklist(request):
 	return render(request, "ranklist.html", params)
 
 
-
 def submit(request, pid):
 	uid = _get_user_id(request)
 	if not uid:
@@ -331,6 +336,87 @@ def homepage(request):
 	return render(request, 'index.html', params)
 
 
+# exam related views
+
+def _get_exam_state(start_time, end_time):
+	state = 0
+	if end_time < datetime.now():
+		state = 2 #ended
+	elif start_time < datetime.now():
+		state = 1 #running
+	return state
+
+def _is_valid_exam_user(request, eid, user_id):
+	eid = str(eid)
+	if "me"+eid in request.session or "administrator" in request.session \
+			or "e"+eid in request.session:
+		return True
+	return False
+
+def exam_header(request, eid):
+	params = {}
+	user_id = _get_user_id(request)
+	if not user_id:
+		return HttpResponseRedirect("/JudgeOnline/login/")
+
+	exam = Exam.objects.filter(exam_id=eid).filter(defunct="N").\
+			values("exam_id", "title", "start_time", "end_time", "private")
+	if not exam:
+		raise Http404("Examination Not exist")
+	exam = exam[0]
+	if exam['private'] and not _is_valid_exam_user(request, eid, user_id):
+		raise Http404("You are not invited to this examination.");
+	# Pending
+	exam["state"] = _get_exam_state(exam["start_time"], exam["end_time"])
+	params = {"exam":exam, "user_id":user_id}
+	return params
+
+
+def exam(request, eid=0):
+	try:
+		eid = int(eid)
+	except ValueError:
+		raise Http404("The examination is not exist")
+
+	now = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+	# exam_list
+	if eid == 0:
+		params = oj_header(request)
+		if type(params) != type({}):
+			return params
+		exam_list = Exam.objects.filter(defunct="N").values("exam_id",
+				"title", "start_time", "end_time", "private")
+		for (idx, exam) in enumerate(exam_list):
+			exam_list[idx]["state"] = _get_exam_state(exam["start_time"],
+					exam["end_time"])
+		params.update({"exam_list":exam_list, "now":now})
+		# raise
+		return render(request, "exam.html", params)
+	else:
+		params = exam_header(request, eid)
+		if type(params) != type({}):
+			return params
+
+		tf_saved = TfSolution.objects.filter(exam_id=eid).count()
+		select_saved = SelectSolution.objects.filter(exam_id=eid).count()
+
+		plist = ExamProblem.objects.filter(exam_id=eid).order_by("num").\
+				filter(problem_type=3).	values("problem_id", "num")
+		if plist:
+			has_aclist = Solution.objects.user_aclist(params["user_id"],
+					cid=eid)
+			plist = [p for p in plist]
+			for i in xrange(len(plist)):
+				pid = plist[i]["problem_id"]
+				if has_aclist.has_key(pid):
+					plist[i]["has_ac"] = has_aclist[pid]
+				else:
+					plist[i]["has_ac"] = 0
+		params.update({"plist":plist, "tf_saved":tf_saved,
+			"select_saved":select_saved, "now":now})
+		return render(request, "exam.html", params)
+
+
 def display_meta(request):
 	values = request.META.items()
 	values.sort()
@@ -338,4 +424,5 @@ def display_meta(request):
 	for k, v in values:
 		html.append('<tr><td>%s</td><td>%s</td></tr>' %(k, v))
 	return HttpResponse('<table>%s</table>' % '\n'.join(html))
+
 

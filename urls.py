@@ -16,10 +16,15 @@ urlpatterns = patterns('',
 	url(r'^JudgeOnline/register/$', register),
 	url(r'^JudgeOnline/status/$', status),
 	url(r'^JudgeOnline/problem/(\d{4})/$', problem),
-	url(r'^JudgeOnline/ranklist/', ranklist),
-	url(r'^JudgeOnline/userinfo/([0-9a-zA-Z_]{3,20})/', userinfo),
+	url(r'^JudgeOnline/ranklist/$', ranklist),
+	url(r'^JudgeOnline/userinfo/([0-9a-zA-Z_]{3,20})/$', userinfo),
 	url(r'^JudgeOnline/submit/(\d{4})/$', submit),
 	url(r'^JudgeOnline/showsource/(\d{4,10})/$', showsource),
+
+	#examination urls
+	url(r'^JudgeOnline/exam/$', exam),
+	url(r'^JudgeOnline/exam/(\d{4,9})/$', exam),
+	# static resources
 	url(r'^bootstrap/(?P<path>.*)$', 'django.views.static.serve',
 		{'document_root': '/home/nineright/codes/djcode/zstuoj/static/bootstrap/'}),
 	url(r'^css/(?P<path>.*)', 'django.views.static.serve',

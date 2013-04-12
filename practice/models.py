@@ -68,13 +68,13 @@ class Problem(models.Model):
 	memory_limit = models.IntegerField(default=64)
 	defunct = models.CharField(max_length=1, default='N')
 	contest_id = models.IntegerField(null=True, blank=True)
-	accepted = models.IntegerField(null=True, blank=True, default=0)
-	submit = models.IntegerField(null=True, blank=True, default=0)
+	accepted = models.IntegerField(default=0)
+	submit = models.IntegerField(default=0)
 	ratio = models.IntegerField(default=0)
-	error = models.IntegerField(null=True, blank=True, default=0)
+	error = models.IntegerField(default=0)
 	difficulty = models.IntegerField(default=0)
-	submit_user = models.IntegerField(null=True, blank=True, default=0)
-	solved = models.IntegerField(null=True, blank=True, default=0)
+	submit_user = models.IntegerField(default=0)
+	solved = models.IntegerField(blank=True, default=0)
 	case_time_limit = models.IntegerField(default=1)
 	spj = models.IntegerField(default=0)
 
@@ -176,12 +176,16 @@ class News(models.Model):
 		db_table = u'news'
 
 class SolutionManager(models.Manager):
-	def user_aclist(self, uid, start_pid=0, end_pid=0):
+	def user_aclist(self, uid, start_pid=0, end_pid=0, cid=0):
 		if not uid:
 			return {}
 		ac_list = self.filter(user_id=uid)
-		if start_pid > 0:
-			ac_list = ac_list.filter(problem_id__gte=start_pid).filter(problem_id__lt=end_pid)
+
+		if cid > 0:
+			ac_list = ac_list.filter(contest_id=cid)
+		elif start_pid > 0:
+			ac_list = ac_list.filter(problem_id__gte=start_pid).\
+					filter(problem_id__lt=end_pid)
 		ac_list = ac_list.values('problem_id')
 		wa_list = ac_list.distinct()
 		has_ac = {}
@@ -192,6 +196,7 @@ class SolutionManager(models.Manager):
 		for pid in ac_list:
 			has_ac[pid['problem_id']] = 1
 		return has_ac
+
 
 class Solution(models.Model):
 	solution_id = models.IntegerField(primary_key=True)
@@ -222,4 +227,98 @@ class SourceCode(models.Model):
 	class Meta:
 		db_table = u'source_code'
 
+
+class TfProblem(models.Model):
+	problem_id = models.IntegerField(primary_key=True, blank=True, null=True)
+	author_id = models.CharField(max_length=60)
+	difficulty = models.IntegerField(null=True, blank=True)
+	chapter_id = models.IntegerField()
+	description = models.TextField(blank=True)
+	answer = models.CharField(max_length=3)
+	defunct = models.CharField(max_length=3, default='N')
+	in_date = models.DateTimeField()
+	submit = models.IntegerField(default=0)
+	solved = models.IntegerField(default=0)
+	class Meta:
+		db_table = u'tf_problem'
+
+class TfSolution(models.Model):
+	solution_id = models.IntegerField(primary_key=True, null=True, blank=True)
+	problem_id = models.IntegerField()
+	user_id = models.CharField(max_length=60)
+	result = models.CharField(max_length=3)
+	choice = models.CharField(max_length=3)
+	language = models.IntegerField()
+	ip = models.CharField(max_length=45)
+	exam_id = models.IntegerField(null=True, blank=True)
+	valid = models.IntegerField()
+	num = models.IntegerField()
+	in_date = models.DateTimeField()
+	class Meta:
+		db_table = u'tf_solution'
+
+
+class SelectProblem(models.Model):
+	problem_id = models.IntegerField(primary_key=True, null=True, blank=True)
+	author_id = models.CharField(max_length=60)
+	difficulty = models.IntegerField(null=True, blank=True)
+	chapter_id = models.IntegerField()
+	description = models.TextField(blank=True)
+	opt_a = models.CharField(max_length=240)
+	opt_b = models.CharField(max_length=240)
+	opt_c = models.CharField(max_length=240, blank=True)
+	opt_d = models.CharField(max_length=240, blank=True)
+	answer = models.CharField(max_length=3)
+	defunct = models.CharField(max_length=3, default='N')
+	in_date = models.DateTimeField()
+	submit = models.IntegerField(default=0)
+	solved = models.IntegerField(default=0)
+	class Meta:
+		db_table = u'select_problem'
+
+class SelectSolution(models.Model):
+	solution_id = models.IntegerField(primary_key=True)
+	problem_id = models.IntegerField()
+	user_id = models.CharField(max_length=60)
+	result = models.CharField(max_length=3)
+	choice = models.CharField(max_length=3)
+	language = models.IntegerField()
+	ip = models.CharField(max_length=45)
+	exam_id = models.IntegerField(null=True, blank=True)
+	valid = models.IntegerField()
+	num = models.IntegerField()
+	in_date = models.DateTimeField()
+	class Meta:
+		db_table = u'select_solution'
+
+
+class Exam(models.Model):
+	exam_id = models.IntegerField(primary_key=True, null=True, default=True)
+	title = models.CharField(max_length=765, blank=True)
+	start_time = models.DateTimeField()
+	end_time = models.DateTimeField()
+	defunct = models.CharField(max_length=3, default='N')
+	description = models.TextField(blank=True)
+	langmask = models.IntegerField()
+	private = models.IntegerField(default=0)
+	random = models.IntegerField(default=0)
+	class Meta:
+		db_table = u'exam'
+
+class ExamProblem(models.Model):
+	exam_problem_id = models.IntegerField(primary_key=True)
+	problem_id = models.IntegerField()
+	problem_type = models.IntegerField()
+	exam_id = models.IntegerField()
+	num = models.IntegerField()
+	class Meta:
+		db_table = u'exam_problem'
+
+class Privilege(models.Model):
+	privilege_id = models.IntegerField(primary_key=True, null=True)
+	user_id = models.CharField(max_length=60)
+	rightstr = models.CharField(max_length=90)
+	defunct = models.CharField(max_length=3)
+	class Meta:
+		db_table = u'privilege'
 

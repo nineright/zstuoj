@@ -1,0 +1,30 @@
+{%include 'exam-header.html'%}
+
+<h2 id=center>选择题</h2>
+<table width=90% align=center>
+	<tr><td>
+			<form align= left method=POST action="">
+				<input type=hidden name='eid' value={{eid}}>
+				{%for select in select_list%}
+				<div style='padding:10px'><input type=hidden name=pid[{{forloop.counter0}}] value={{select.problem_id}}>
+					<input type=hidden name=num[{{forloop.count0}}] value='{{forloop.counter0}}'>
+					<pre style='font-size:16px'>{{forloop.counter}}. (2分)<br>{{select.desciption}}<br><br></pre>
+					A:&nbsp;{{select.opt_a}}<br>
+					B:&nbsp;{{select.opt_b}}<br>
+					C:&nbsp;{{select.opt_c}}<br>
+					D:&nbsp;{{select.opt_d}}<br>
+					<br>
+					<select name=answer[{{forloop.counter0}}] class='input-small'>
+						<option value='' {%if select.saved_value %}{%else%}"selected"{%endif%}></option>
+						{%for opt in opt_list%}
+						<option value={{opt}} {%ifequal opt select.saved_value %}"selected"{%endifequal%}>{{opt}}</option>	
+						{%endfor%}
+					</select>
+				</div>
+				{%endfor%}
+				<div id=center><font color=red>已经保存</font><br></div>
+				<div id=center><font color=red>尚未保存</font><br></div>
+				<div><input type=submit class='btn btn-primary' value=提交  name=submit></div>
+			</form>
+	</td></tr>
+</table>

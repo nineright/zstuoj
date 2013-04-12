@@ -1,0 +1,117 @@
+{%if eid%}
+{%include 'exam-header.html'%}
+<title>考试 - {{exam.title}}</title>
+<h3>考试 - {{exam.title}}</h3>
+<p>{{exam.description}}</p><br>
+开始时间: <font color=#993399>{{exam.start_time}}</font>
+结束结束: <font color=#993399>{{exam.end_time}}</font><br>
+当前时间: <font color=#993399><span id=nowdate ></span></font> Status:";
+{%ifequal exam.state 0%}
+<font color=blue>ended@{{exam.end_time}}</font>
+{%else%}
+{%ifequal exam.state 1%}
+<font color=red>Running</font>
+{%else%}
+<font color=green>Pending</font>
+{%endifequal%}
+{%endifequal%}
+{%if exam.private%}
+&nbsp;&nbsp;<font color=red>Private</font>
+{%else%}
+&nbsp;&nbsp;<font color=blue>Public</font>
+{%endif%}
+<h3 align=center>客观题</h3>
+<table width=50%>
+	<tr class=toprow>
+		<td width=30%><b>状态</b></td><td width=70%><b>题目类型</b></td>
+	</tr>
+	<tr class=evenrow><td>
+			{%if tf_submit%}
+			<font color=green> 已经提交 </font>
+			{%else%}
+			<font color=red>尚未提交</font>
+			{%endif%}</td>
+		<td><a href='/JudgeOnline/exam_tf_problem/{{eid}}/'>判断题</a></td>
+	</tr>
+	<tr class=oddrow><td>
+			{%if select_submit%}
+			<font color=green> 已经提交 </font>
+			{%else%}
+			<font color=red>尚未提交</font>
+			{%endif%}</td>
+		<td><a href='/JudgeOnline/exam_select_problem/{{eid}}/'>选择题</a></td>
+	</tr>
+</table><br>
+
+<h3 align=center>编程题</h3>
+<table width=60%>
+	<tr class=toprow><td width=5><td width=34%></td><b>题目ID</b><td width=65%><b>标题</b></td></tr>
+		{%for p in plist%}	
+		<tr class ={%cycle "evenrow" "oddrow"%}>
+			<td><b>{{p.result}}</b></td>
+			<td>{{p.pid}}</td>
+			<td><a href="/JudgeOnline/exam_problem/{{eid}}/">{{p.title}}</a></td>
+		</tr>
+		{%endfor%}
+	</table><br>
+	[<a href='status.php?cid=$cid'>提交状态</a>]
+</table>
+
+
+<!--bellow show the exam lists-->
+{%else%}
+{%include 'oj-header.html'%}
+<title>考试列表</title>
+<center>
+	<table width=90%><h2>考试列表</h2>当前时间:<span id=nowdate></span>
+		<tr class=toprow align=center>
+			<td width=10%>ID</td><td width=50%>Name</td><td width=30%>Status</td><td width=10%>Private</td>
+		</tr>
+
+		{%for exam in exam_list%}
+		<tr align=center class={%cycle "oddrow" "evenrow"%}>
+			<td>{{exam.exam_id}}</td>
+			<td><a href="/JudgeOnline/exam/{{exam.exam_id}}/">{{exam.title}}</a></td>
+			{%ifequal exam.state 0%}
+			<td><font color=blue>ended@{{exam.end_time}}</font></td>
+			{%else%}
+			{%ifequal exam.state 1%}
+			<td><font color=red>Running</font></td>
+			{%else%}
+			<td><font color=green>Pending</font></td>
+			{%endifequal%}
+			{%endifequal%}
+			{%if exam.private%}
+			<td><font color=red>Private</font></td>
+			{%else%}
+			<td><font color=blue>Public</font></td>
+			{%endif%}
+		</tr>
+		{%endfor%}
+</table></center>
+{%endif%}
+
+<script>
+	var diff=new Date("{{now}}").getTime()-new Date().getTime();
+	//alert(diff);
+	function clock()
+	{
+		var h,m,s,n,y,mon,d;
+		var x = new Date(new Date().getTime()+diff);
+		y = x.getYear()+1900;
+		if (y>3000) y-=1900;
+		mon = x.getMonth()+1;
+		d = x.getDate();
+		xingqi = x.getDay();
+		h=x.getHours();
+		m=x.getMinutes();
+		s=x.getSeconds();
+
+		n=y+"-"+mon+"-"+d+" "+(h>=10?h:"0"+h)+":"+(m>=10?m:"0"+m)+":"+(s>=10?s:"0"+s);
+		//alert(n);
+		document.getElementById('nowdate').innerHTML=n;
+		setTimeout("clock()",1000);
+	} 
+	clock();
+</script>
+
